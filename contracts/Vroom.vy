@@ -19,6 +19,8 @@ event Approval:
     spender: indexed(address)
     value: uint256
 
+MAX_RECIPIENTS: constant(uint256) = 100
+
 name: public(String[32])
 symbol: public(String[32])
 decimals: public(uint8)
@@ -137,4 +139,21 @@ def updateFees(_buyFees: uint256, _sellFees: uint256) -> bool:
     assert _buyFees <= 100 and _sellFees <= 100, "Fees can't be more than 100%"
     self.buyFees = _buyFees
     self.sellFees = _sellFees
+    return True
+
+@external
+def multiTransfer(_recipients: address[MAX_RECIPIENTS], _amounts: uint256[MAX_RECIPIENTS]) -> bool:
+    assert msg.sender == self.owner, "Only owner can multi transfer"
+
+    totalAmount: uint256 = 0
+    for i in range(MAX_RECIPIENTS):
+        if _recipients[i] != empty(address):
+            totalAmount += _amounts[i]
+
+    assert self.balanceOf[msg.sender] >= totalAmount, "Insufficient balance"
+
+    for i in range(MAX_RECIPIENTS):
+        if _recipients[i] != empty(address):
+            self._transfer(msg.sender, _recipients[i], _amounts[i], msg.sender)
+
     return True

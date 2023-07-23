@@ -38,6 +38,37 @@ contract("Vroom::Token", (accounts) => {
     );
   });
 
+  it("should transfer to multiple addresses", async () => {
+    const vroom = await Vroom.deployed();
+
+    const addresses = [accounts[3], accounts[4], accounts[5]];
+    const amounts = [
+      web3.utils.toWei(web3.utils.BN(45555793.8891308)),
+      web3.utils.toWei(web3.utils.BN(45555793.8891308)),
+      web3.utils.toWei(web3.utils.BN(45555793.8891308)),
+    ];
+
+    // fill up addresses with 0x0 to make it 100 lengths
+    // multiTransfer only accepts 100 addresses at a time
+    const fillUp = 100 - addresses.length;
+    for (let i = 0; i < fillUp; i++) {
+      addresses.push("0x0000000000000000000000000000000000000000");
+      amounts.push(web3.utils.toWei(web3.utils.BN(0)));
+    }
+
+    await vroom.multiTransfer(addresses, amounts);
+
+    expect((await vroom.balanceOf.call(addresses[0])).toString()).to.equal(
+      amounts[0].toString()
+    );
+    expect((await vroom.balanceOf.call(addresses[1])).toString()).to.equal(
+      amounts[1].toString()
+    );
+    expect((await vroom.balanceOf.call(addresses[2])).toString()).to.equal(
+      amounts[2].toString()
+    );
+  });
+
   it("should not be able to transfer more than balance", async () => {
     const vroom = await Vroom.deployed();
 
