@@ -1,5 +1,5 @@
-var VyperStorage = artifacts.require("VyperStorage");
+var Vroom = artifacts.require("Vroom");
 
 module.exports = function(deployer) {
-  deployer.deploy(VyperStorage);
+  deployer.deploy(Vroom);
 };

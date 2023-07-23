@@ -4,10 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "truffle test",
-    "compile": "truffle compile"
+    "compile": "rm -rf build/* && yarn truffle compile",
+    "test": "truffle test"
   },
   "dependencies": {
-    "truffle": "^5.11.0"
+    "truffle": "^5.11.0",
+    "truffle-assertions": "^0.9.2"
   }
 }
