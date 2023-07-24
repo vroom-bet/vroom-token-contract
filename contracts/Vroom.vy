@@ -83,6 +83,7 @@ def transferFrom(_from: address, _to: address, _value: uint256) -> bool:
 
 @internal
 def _transfer(_from: address, _to: address, _value: uint256, _sender: address) -> bool:
+  assert _to != empty(address), "Can't transfer to zero address"
   assert self.balanceOf[_from] >= _value, "Insufficient balance"
   assert self.tradingEnabled or self.excludedFromMaxTxAmount[_sender] == True, "Trading not enabled"
 

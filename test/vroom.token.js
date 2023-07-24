@@ -24,6 +24,19 @@ contract("Vroom::Token", (accounts) => {
     );
   });
 
+  it("should not transfer to empty address", async () => {
+    const vroom = await Vroom.deployed();
+    const amount = web3.utils.toWei(web3.utils.BN(1_000_000_000));
+
+    await truffleAssert.reverts(
+      vroom.transfer(
+        "0x0000000000000000000000000000000000000000",
+        amount.toString()
+      ),
+      "Can't transfer to zero address"
+    );
+  });
+
   it("should transfer without fees", async () => {
     const vroom = await Vroom.deployed();
 
