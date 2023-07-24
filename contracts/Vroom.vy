@@ -147,13 +147,15 @@ def multiTransfer(_recipients: address[MAX_RECIPIENTS], _amounts: uint256[MAX_RE
 
   totalAmount: uint256 = 0
   for i in range(MAX_RECIPIENTS):
-    if _recipients[i] != empty(address):
-      totalAmount += _amounts[i]
+    if _recipients[i] == empty(address):
+      break
+    totalAmount += _amounts[i]
 
   assert self.balanceOf[msg.sender] >= totalAmount, "Insufficient balance"
 
   for i in range(MAX_RECIPIENTS):
-    if _recipients[i] != empty(address):
-      self._transfer(msg.sender, _recipients[i], _amounts[i], msg.sender)
+    if _recipients[i] == empty(address):
+      break
+    self._transfer(msg.sender, _recipients[i], _amounts[i], msg.sender)
 
   return True
