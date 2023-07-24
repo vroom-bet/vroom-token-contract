@@ -89,22 +89,21 @@ def _transfer(_from: address, _to: address, _value: uint256, _sender: address) -
   if (self.ammPairs[_from] == True and self.excludedFromMaxTxAmount[_to] == False) or (self.ammPairs[_to] == True and self.excludedFromMaxTxAmount[_from] == False):
     assert _value <= self.maxTxAmount, "Transfer amount exceeds the maxTxAmount."
 
+  # first decrease the balance of the sender
+  self.balanceOf[_from] -= _value
+
+  # calculate if fees applies
+  feesAmount: uint256 = 0
   if self.ammPairs[_from] == True and self.excludedFromFees[_to] == False:
-    feesAmount: uint256 = _value * self.buyFees / 100
-    self.balanceOf[_from] -= _value
-    self.balanceOf[_to] += _value - feesAmount
-    self.balanceOf[self.feesWallet] += feesAmount
-    log Transfer(_from, _to, _value - feesAmount)
+    feesAmount = _value * self.buyFees / 100
   elif self.ammPairs[_to] == True and self.excludedFromFees[_from] == False:
-    feesAmount: uint256 = _value * self.sellFees / 100
-    self.balanceOf[_from] -= _value
-    self.balanceOf[_to] += _value - feesAmount
-    self.balanceOf[self.feesWallet] += feesAmount
-    log Transfer(_from, _to, _value - feesAmount)
-  else:
-    self.balanceOf[_from] -= _value
-    self.balanceOf[_to] += _value
-    log Transfer(_from, _to, _value)
+      feesAmount = _value * self.sellFees / 100
+
+  # increase the balance of the receiver
+  self.balanceOf[_to] += _value - feesAmount
+  self.balanceOf[self.feesWallet] += feesAmount
+
+  log Transfer(_from, _to, _value - feesAmount)
 
   return True
 
