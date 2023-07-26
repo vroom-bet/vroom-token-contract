@@ -7,7 +7,7 @@ const UniswapV2Factory = artifacts.require("UniswapV2Factory");
 contract("Vroom::Trading", async ([owner, trader]) => {
   const routerAddr = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
   const factoryAddr = "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f";
-  const taxWallet = "0x2e38856eB6F2a0aAF13cE7ce98e34901884c517C";
+  const burnWallet = "0x000000000000000000000000000000000000dead";
 
   const tenMinutes = () => Math.floor((Date.now() + 10 * 60 * 1000) / 1000);
 
@@ -79,7 +79,7 @@ contract("Vroom::Trading", async ([owner, trader]) => {
 
     await truffleAssert.reverts(
       routerContract.swapExactETHForTokensSupportingFeeOnTransferTokens(
-        "0",
+        "1",
         [WETH, vroom.address],
         trader,
         tenMinutes(),
@@ -88,7 +88,7 @@ contract("Vroom::Trading", async ([owner, trader]) => {
     );
 
     expect((await vroom.balanceOf.call(trader)).toString()).to.equal("0");
-    expect((await vroom.balanceOf.call(taxWallet)).toString()).to.equal("0");
+    expect((await vroom.balanceOf.call(burnWallet)).toString()).to.equal("0");
   });
 
   it("should allow buying after trading is enabled", async () => {
@@ -98,7 +98,7 @@ contract("Vroom::Trading", async ([owner, trader]) => {
 
     await vroom.enableTrading();
     await routerContract.swapExactETHForTokensSupportingFeeOnTransferTokens(
-      "0",
+      "1",
       [WETH, vroom.address],
       trader,
       tenMinutes(),
@@ -108,7 +108,7 @@ contract("Vroom::Trading", async ([owner, trader]) => {
     const traderBalance = await vroom.balanceOf.call(trader);
     expect(traderBalance.toString()).to.not.equal("0");
 
-    const taxWalletBalance = await vroom.balanceOf.call(taxWallet);
+    const taxWalletBalance = await vroom.balanceOf.call(burnWallet);
     expect(taxWalletBalance.toString()).to.not.equal("0");
   });
 
@@ -119,7 +119,7 @@ contract("Vroom::Trading", async ([owner, trader]) => {
 
     const beforeEthTraderBalance = await web3.eth.getBalance(trader);
     const beforeTraderBalance = await vroom.balanceOf.call(trader);
-    const beforeTaxBalance = await vroom.balanceOf.call(taxWallet);
+    const beforeTaxBalance = await vroom.balanceOf.call(burnWallet);
 
     await vroom.approve(routerAddr, beforeTraderBalance.toString(), {
       from: trader,
@@ -127,7 +127,7 @@ contract("Vroom::Trading", async ([owner, trader]) => {
 
     await routerContract.swapExactTokensForETHSupportingFeeOnTransferTokens(
       beforeTraderBalance.toString(),
-      "0",
+      "1",
       [vroom.address, WETH],
       trader,
       tenMinutes(),
@@ -136,7 +136,7 @@ contract("Vroom::Trading", async ([owner, trader]) => {
 
     const afterEthTraderBalance = await web3.eth.getBalance(trader);
     const afterTraderBalance = await vroom.balanceOf.call(trader);
-    const afterTaxBalance = await vroom.balanceOf.call(taxWallet);
+    const afterTaxBalance = await vroom.balanceOf.call(burnWallet);
 
     expect(afterTraderBalance.toString()).to.equal("0");
     expect(afterEthTraderBalance.toString()).to.not.equal(

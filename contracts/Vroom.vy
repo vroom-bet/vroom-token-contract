@@ -20,6 +20,7 @@ event Approval:
   value: uint256
 
 MAX_RECIPIENTS: constant(uint256) = 100
+BURN_ADDRESS: constant(address) = 0x000000000000000000000000000000000000dEaD
 
 name: public(String[32])
 symbol: public(String[32])
@@ -38,8 +39,6 @@ excludedFromFees: public(HashMap[address, bool])
 
 maxTxAmount: public(uint256)
 excludedFromMaxTxAmount: public(HashMap[address, bool])
-
-feesWallet: public(address)
 
 @external
 def __init__():
@@ -67,9 +66,6 @@ def __init__():
   # exclude uniswap router from trading ban
   # allows us to create the LP while people can't trade yet
   self.excludedFromMaxTxAmount[0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D] = True
-
-  # set fees wallet
-  self.feesWallet = 0x2e38856eB6F2a0aAF13cE7ce98e34901884c517C
 
 @external
 def transfer(_to: address, _value: uint256) -> bool:
@@ -102,7 +98,7 @@ def _transfer(_from: address, _to: address, _value: uint256, _sender: address) -
 
   # increase the balance of the receiver
   self.balanceOf[_to] += _value - feesAmount
-  self.balanceOf[self.feesWallet] += feesAmount
+  self.balanceOf[BURN_ADDRESS] += feesAmount
 
   log Transfer(_from, _to, _value - feesAmount)
 
