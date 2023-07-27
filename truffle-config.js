@@ -16,10 +16,15 @@ module.exports = {
     },
     sepolia: {
       provider: () =>
-        new HDWalletProvider(process.env.MNEMONIC, process.env.RPC_URL),
+        new HDWalletProvider(process.env.MNEMONIC, process.env.SEPOLIA_RPC_URL),
       network_id: "11155111",
       gas: 4465030,
     },
+    ethereum: {
+      provider: () =>
+        new HDWalletProvider(process.env.MNEMONIC, process.env.ETHEREUM_RPC_URL),
+      network_id: "1",
+    }
   },
   compilers: {
     solc: {
