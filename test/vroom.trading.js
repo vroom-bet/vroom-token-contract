@@ -17,6 +17,11 @@ contract("Vroom::Trading", async ([owner, trader]) => {
   // uniswap pair address
   let pair = "";
 
+  before(async () => {
+    const vroom = await Vroom.deployed();
+    await vroom.addExcludedFromMaxTxAmount(routerAddr);
+  });
+
   it("should create Uniswap Pair and `addAMMPair` on contract", async () => {
     const vroom = await Vroom.deployed();
     const routerContract = await UniswapV2Router02.at(routerAddr);

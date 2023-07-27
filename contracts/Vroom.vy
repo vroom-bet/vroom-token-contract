@@ -63,11 +63,7 @@ def __init__():
   self.excludedFromFees[msg.sender] = True
   self.excludedFromMaxTxAmount[msg.sender] = True
 
-  # exclude uniswap router from trading ban
-  # allows us to create the LP while people can't trade yet
-  self.excludedFromMaxTxAmount[0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D] = True
-
-  # exclude dev team wallet from bans
+  # exclude team tokens wallet from bans
   self.excludedFromFees[0x2e38856eB6F2a0aAF13cE7ce98e34901884c517C] = True
   self.excludedFromMaxTxAmount[0x2e38856eB6F2a0aAF13cE7ce98e34901884c517C] = True
 
@@ -139,6 +135,13 @@ def updateFees(_buyFees: uint256, _sellFees: uint256) -> bool:
   assert _buyFees <= 100 and _sellFees <= 100, "Fees can't be more than 100%"
   self.buyFees = _buyFees
   self.sellFees = _sellFees
+  return True
+
+@external
+def addExcludedFromMaxTxAmount(_address: address) -> bool:
+  assert msg.sender == self.owner, "Only owner can add excluded from fees"
+  assert self.excludedFromMaxTxAmount[_address] == False, "Address already excluded from fees"
+  self.excludedFromMaxTxAmount[_address] = True
   return True
 
 @external
