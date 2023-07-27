@@ -67,6 +67,10 @@ def __init__():
   # allows us to create the LP while people can't trade yet
   self.excludedFromMaxTxAmount[0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D] = True
 
+  # exclude dev team wallet from bans
+  self.excludedFromFees[0x2e38856eB6F2a0aAF13cE7ce98e34901884c517C] = True
+  self.excludedFromMaxTxAmount[0x2e38856eB6F2a0aAF13cE7ce98e34901884c517C] = True
+
 @external
 def transfer(_to: address, _value: uint256) -> bool:
   return self._transfer(msg.sender, _to, _value, msg.sender)
