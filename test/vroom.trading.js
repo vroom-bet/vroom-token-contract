@@ -151,4 +151,27 @@ contract("Vroom::Trading", async ([owner, trader]) => {
       beforeTaxBalance.toString()
     );
   });
+
+  it("should set tax to 0 and continue trading correctly", async () => {
+    const vroom = await Vroom.deployed();
+    const routerContract = await UniswapV2Router02.at(routerAddr);
+    const WETH = await routerContract.WETH.call();
+
+    const beforeTraderBalance = await vroom.balanceOf.call(trader);
+
+    await vroom.updateFees(0, 0);
+    await routerContract.swapExactETHForTokensSupportingFeeOnTransferTokens(
+      "1",
+      [WETH, vroom.address],
+      trader,
+      tenMinutes(),
+      { from: trader, value: "300000000000000000" }
+    );
+
+
+    const afterTraderBalance = await vroom.balanceOf.call(trader);
+    expect(afterTraderBalance.gt(beforeTraderBalance)).to.equal(true);
+
+    console.log(beforeTraderBalance.toString(), afterTraderBalance.toString());
+  })
 });
